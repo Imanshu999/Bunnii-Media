@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bunnii Media App</title>
+    <title>Bunnii Media - Premium Full-Stack Ecosystem</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -44,17 +44,6 @@
         .auth-btn { width: 100%; background: linear-gradient(135deg, var(--accent-color), #ff5e62); color: #ffffff; border: none; padding: 16px; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 15px; box-shadow: 0 8px 25px var(--accent-glow); transition: 0.2s; }
         .auth-btn:hover { opacity: 0.9; transform: translateY(-1px); }
         .toggle-auth { margin-top: 20px; color: var(--text-muted); cursor: pointer; font-size: 14px; text-decoration: underline; }
-
-        /* --- ADMIN CONTROL CENTER LAYER --- */
-        #adminPanel { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(5, 7, 11, 0.98); backdrop-filter: blur(40px); z-index: 2000; display: none; padding: 30px 20px; overflow-y: auto; }
-        .admin-wrapper { max-width: 600px; margin: 0 auto; }
-        .admin-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--admin-gold); padding-bottom: 15px; margin-bottom: 25px; }
-        .admin-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
-        .admin-stat-box { background: var(--bg-secondary); border: 1px solid rgba(255, 204, 0, 0.2); padding: 20px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px var(--admin-glow); }
-        .admin-stat-box h3 { font-size: 14px; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; }
-        .admin-stat-box p { font-size: 28px; font-weight: 800; color: var(--admin-gold); }
-        .admin-user-list { display: flex; flex-direction: column; gap: 12px; }
-        .admin-user-card { background: var(--bg-secondary); border: 1px solid var(--glass-border); padding: 15px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; }
 
         /* --- TOP APP HEADER --- */
         .top-header { height: 65px; background: rgba(5, 7, 11, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; padding: 0 24px; position: relative; z-index: 90; }
@@ -116,28 +105,35 @@
         .chat-input-area { padding: 12px; background: rgba(0,0,0,0.3); border-top: 1px solid var(--glass-border); display: flex; gap: 10px; }
         .chat-input-area input { flex: 1; background: var(--bg-primary); border: 1px solid var(--glass-border); border-radius: 14px; padding: 14px; color: white; outline: none; }
 
-        /* --- PROFILE VIEW WITH NEW COUNTRY IDENTITY INFO --- */
+        /* --- PROFILE VIEW --- */
         .profile-header-card { background: var(--bg-secondary); border: 1px solid var(--glass-border); padding: 25px 15px; border-radius: 24px; text-align: center; margin-bottom: 20px; }
         .profile-pic-container { position: relative; width: 95px; height: 95px; margin: 0 auto 12px; }
         .profile-pic { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--accent-color); background-size: cover; background-position: center; }
         .edit-avatar-badge { position: absolute; bottom: 0; right: 0; background: var(--accent-color); width: 28px; height: 28px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; border: 2px solid var(--bg-secondary); color: white; font-size: 12px; }
-        
         .profile-editable-field { background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: white; padding: 10px; border-radius: 8px; text-align: center; font-size: 15px; width: 80%; margin: 5px auto 8px; display: block; outline: none; font-weight: bold; }
         .fixed-email-tag { color: var(--text-muted); font-size: 13px; font-weight: 500; display: block; margin-bottom: 4px; }
-        
-        /* THE EXCLUSIVE SYSTEM COUNTRY FLAG BADGE */
         .country-flag-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 51, 102, 0.15); border: 1px solid var(--accent-color); padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: bold; margin-top: 8px; color: white; }
-        
         .stats-matrix { display: flex; justify-content: space-around; margin-top: 20px; border-top: 1px solid var(--glass-border); padding-top: 15px; }
         .stat-node { display: flex; flex-direction: column; }
         .stat-val { font-size: 18px; font-weight: 800; }
         .stat-label { font-size: 11px; color: var(--text-muted); font-weight: 600; }
         .sec-btn { background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); color: white; padding: 8px 16px; border-radius: 10px; font-size: 13px; cursor: pointer; font-weight: 600; }
 
+        /* --- MAIN SYSTEM INLINE ADMIN SECTION PANEL --- */
+        .admin-stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .admin-card { background: var(--bg-secondary); border: 1px solid rgba(255, 204, 0, 0.2); border-radius: 20px; padding: 15px; text-align: center; }
+        .admin-card p { font-size: 24px; font-weight: 800; color: var(--admin-gold); }
+        .admin-user-editor-list { display: flex; flex-direction: column; gap: 12px; }
+        .admin-edit-row { background: var(--bg-secondary); border: 1px solid var(--glass-border); padding: 15px; border-radius: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .admin-edit-actions { display: flex; gap: 10px; justify-content: flex-end; }
+        .admin-edit-row input { background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; padding: 6px 10px; border-radius: 8px; outline: none; font-size: 13px; }
+
         /* --- BOTTOM NAV CONTROLS --- */
         .bottom-nav { height: 75px; background: rgba(13, 17, 26, 0.85); backdrop-filter: blur(25px); border-top: 1px solid var(--glass-border); display: flex; justify-content: space-around; align-items: center; position: sticky; bottom: 0; width: 100%; z-index: 99; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; width: 33%; height: 100%; gap: 4px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; flex: 1; height: 100%; gap: 4px; }
         .nav-item.active { color: var(--accent-color); }
+        .nav-item.admin-nav-tab { color: #ffbb008f; }
+        .nav-item.admin-nav-tab.active { color: var(--admin-gold) !important; text-shadow: 0 0 10px var(--admin-glow); }
     </style>
 </head>
 <body>
@@ -158,7 +154,6 @@
                     <option value="🇬🇧|UK">UK 🇬🇧</option>
                     <option value="🇦🇪|UAE">UAE 🇦🇪</option>
                     <option value="🇨🇦|Canada">Canada 🇨🇦</option>
-                    <option value="🇦🇺|Australia">Australia 🇦🇺</option>
                 </select>
             </div>
 
@@ -166,29 +161,6 @@
             <input type="password" id="authPassword" placeholder="Security Token Pass Code">
             <button class="auth-btn" id="mainAuthButton" onclick="handleAuth()">Authorize Node Connection</button>
             <p class="toggle-auth" onclick="toggleAuthMode()" id="toggleText">Create Account / Sign Up New Node</p>
-        </div>
-    </div>
-
-    <div id="adminPanel">
-        <div class="admin-wrapper">
-            <div class="admin-header">
-                <h2 style="color: var(--admin-gold);"><i class="fa-solid fa-terminal"></i> ADMINISTRATIVE DASHBOARD</h2>
-                <button onclick="document.getElementById('adminPanel').style.display='none'" class="sec-btn" style="border-color:var(--admin-gold); color:var(--admin-gold);">Exit Terminal</button>
-            </div>
-            <div class="admin-stats">
-                <div class="admin-stat-box">
-                    <h3>Total Node Registrations</h3>
-                    <p id="adminTotalUsers">0</p>
-                </div>
-                <div class="admin-stat-box">
-                    <h3>Total Network Post Logs</h3>
-                    <p id="adminTotalPosts">0</p>
-                </div>
-            </div>
-            <div style="margin-top: 10px;">
-                <h3 style="color:var(--text-muted); font-size:14px; margin-bottom:12px; text-transform:uppercase;">Registered Node Database Ledger</h3>
-                <div class="admin-user-list" id="adminUserListTarget"></div>
-            </div>
         </div>
     </div>
 
@@ -267,7 +239,6 @@
                 <input type="text" class="profile-editable-field" id="profileUserHandleField" placeholder="@handle">
                 <span class="fixed-email-tag" id="profileEmailLabel">user@gmail.com</span>
                 <span class="fixed-email-tag" id="profileMobileLabel" style="color:var(--text-muted); font-size:12px;">Mobile: +91 0000000000</span>
-                
                 <div class="country-flag-badge" id="myCountryBadge">🌐 Global Network</div>
                 
                 <div style="margin-top: 16px;">
@@ -283,15 +254,24 @@
             <h4 style="margin-bottom: 12px; color: var(--text-muted); font-weight: 800; font-size:11px; text-transform:uppercase;">Personal Broadcast Matrix</h4>
             <div id="myPostsArea"></div>
         </div>
+
+        <div id="adminArea" class="app-section">
+            <h3 style="color: var(--admin-gold); margin-bottom: 15px;"><i class="fa-solid fa-terminal"></i> Creator Control Terminal</h3>
+            <div class="admin-stat-row">
+                <div class="admin-card"><h5>Nodes</h5><p id="inlineAdminUsersCount">0</p></div>
+                <div class="admin-card"><h5>Broadcasts</h5><p id="inlineAdminPostsCount">0</p></div>
+            </div>
+            <h4 style="font-size: 12px; text-transform: uppercase; margin-bottom: 10px; color: var(--text-muted);">Database Read/Write Engine</h4>
+            <div class="admin-user-editor-list" id="inlineAdminUsersList"></div>
+        </div>
     </div>
 
-    <div class="bottom-nav">
+    <div class="bottom-nav" id="appBottomNav">
         <div class="nav-item active" onclick="switchSection('home', this)"><i class="fa-solid fa-house"></i><span>Home</span></div>
         <div class="nav-item" onclick="switchSection('chats', this)"><i class="fa-solid fa-message"></i><span>Chats</span></div>
         <div class="nav-item" onclick="switchSection('profile', this)"><i class="fa-solid fa-user"></i><span>Profile</span></div>
+        <div class="nav-item admin-nav-tab" id="dynamicAdminNavTab" style="display: none;" onclick="switchSection('adminArea', this)"><i class="fa-solid fa-screwdriver-wrench"></i><span>Admin Command</span></div>
     </div>
-
-    <button onclick="triggerAdminAccessAuthentication()" style="position:fixed; bottom: 2px; left: 2px; width: 8px; height: 8px; background: transparent; border: none; cursor: default; z-index: 99999; outline: none; color:transparent;"></button>
 
     <script>
         // BACKGROUND 3D APPLE STYLE STREAM RUNNER
@@ -310,8 +290,7 @@
 
         // FALLBACK LOCAL STORAGE SIMULATED INFRASTRUCTURE DB
         let localFallbackDatabase = JSON.parse(localStorage.getItem('bunnii_app_db')) || [
-            { uid: 'u_1', username: 'imanshu_999', email: 'imanshu@gmail.com', firstName: 'Imanshu', lastName: 'Dev', mobile: '9876543210', countryFlag: '🇮🇳', countryName: 'India', avatar: 'https://api.dicebear.com/7.x/pixel-art/svg?seed=imanshu', followers: [], following: [] },
-            { uid: 'u_2', username: 'rockstar_dev', email: 'dev@gmail.com', firstName: 'Rock', lastName: 'Star', mobile: '8888888888', countryFlag: '🇺🇸', countryName: 'USA', avatar: 'https://api.dicebear.com/7.x/pixel-art/svg?seed=dev', followers: [], following: [] }
+            { uid: 'u_1', username: 'monster7970', email: 'n4062226@gmail.com', pass: 'admin123', firstName: 'Imanshu', lastName: 'Dev', mobile: '07027232067', countryFlag: '🇮🇳', countryName: 'India', avatar: 'https://api.dicebear.com/7.x/pixel-art/svg?seed=monster7970', followers: [], following: [] }
         ];
         
         let activeUserSession = JSON.parse(localStorage.getItem('bunnii_app_session')) || null;
@@ -341,11 +320,11 @@
             document.getElementById('mediaPreviewBox').style.display = "none";
         }
 
-        // FULL BIO AUTH REGISTRATION PROCESSING HUB
+        // FULL SIGN UP / SIGN IN ROUTING HUB
         function handleAuth() {
             const email = document.getElementById('authEmail').value.trim();
             const password = document.getElementById('authPassword').value;
-            if(!email) return alert("System requires email parameters to bind.");
+            if(!email || !password) return alert("System requires email and token password parameters.");
 
             let verifiedRecord = localFallbackDatabase.find(u => u.email.toLowerCase() === email.toLowerCase());
 
@@ -355,15 +334,15 @@
                 const fName = document.getElementById('regFirstName').value.trim();
                 const lName = document.getElementById('regLastName').value.trim();
                 const mobileNum = document.getElementById('regMobile').value.trim();
-                const countryRawData = document.getElementById('regCountry').value; // format: Flag|Name
+                const countryRawData = document.getElementById('regCountry').value; 
                 
-                if(!fName || !lName || !mobileNum) return alert("System Rule Violation: All profile fields must be fulfilled!");
+                if(!fName || !lName || !mobileNum) return alert("All profile fields must be fulfilled!");
 
                 const dataTokens = countryRawData.split('|');
                 let randomizedHandle = fName.toLowerCase() + Date.now().toString().slice(-4);
 
                 let newUserNode = { 
-                    uid: 'u_' + Date.now(), username: randomizedHandle, email: email, 
+                    uid: 'u_' + Date.now(), username: randomizedHandle, email: email, pass: password,
                     firstName: fName, lastName: lName, mobile: mobileNum,
                     countryFlag: dataTokens[0], countryName: dataTokens[1],
                     avatar: "https://api.dicebear.com/7.x/pixel-art/svg?seed=" + randomizedHandle, 
@@ -375,14 +354,15 @@
                 verifiedRecord = newUserNode;
             }
 
-            if(!verifiedRecord) return alert("No active signature record mapped to this email. Sign Up New Node first.");
+            if(!verifiedRecord || verifiedRecord.pass !== password) {
+                return alert("Security Authorization Failure: Invalid Node Parameters!");
+            }
 
             activeUserSession = verifiedRecord;
             localStorage.setItem('bunnii_app_session', JSON.stringify(activeUserSession));
             synchronizeSystemState();
         }
 
-        // PROFILE MULTIMEDIA REASSESSMENT ENGINE
         function updateProfilePictureEngine(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -393,10 +373,7 @@
                     activeUserSession.avatar = imgString;
                     localStorage.setItem('bunnii_app_session', JSON.stringify(activeUserSession));
                     
-                    localFallbackDatabase = localFallbackDatabase.map(u => {
-                        if(u.email === activeUserSession.email) { u.avatar = imgString; }
-                        return u;
-                    });
+                    localFallbackDatabase = localFallbackDatabase.map(u => { if(u.email === activeUserSession.email) u.avatar = imgString; return u; });
                     localStorage.setItem('bunnii_app_db', JSON.stringify(localFallbackDatabase));
                     
                     let posts = JSON.parse(localStorage.getItem('bunnii_app_posts')) || [];
@@ -426,12 +403,18 @@
             document.getElementById('profileMobileLabel').innerText = "Mobile Phone: " + (activeUserSession.mobile || "N/A");
             document.getElementById('profileUserHandleField').value = '@' + activeUserSession.username;
             document.getElementById('myProfilePic').style.backgroundImage = `url('${activeUserSession.avatar}')`;
-            
-            // COMMIT PROFILE COUNTRY BADGE LOGIC
             document.getElementById('myCountryBadge').innerHTML = `${activeUserSession.countryFlag || '🌐'} ${activeUserSession.countryName || 'Global Area'}`;
 
             document.getElementById('statFollowers').innerText = selfRef.followers ? selfRef.followers.length : 0;
             document.getElementById('statFollowing').innerText = selfRef.following ? selfRef.following.length : 0;
+
+            // EXCLUSIVE JET-LOCK CREATOR MASTER KEY CHECK
+            if(activeUserSession.email.toLowerCase() === "n4062226@gmail.com") {
+                document.getElementById('dynamicAdminNavTab').style.display = "flex";
+                triggerInlineAdminEngineRefresh();
+            } else {
+                document.getElementById('dynamicAdminNavTab').style.display = "none";
+            }
 
             loadPosts(); loadChatTerminalUsers();
         }
@@ -442,7 +425,7 @@
             if(!parsedHandle) return alert("System Identity Handle cannot remain blank.");
 
             let clash = localFallbackDatabase.find(u => u.username === parsedHandle && u.email !== activeUserSession.email);
-            if(clash) return alert("This custom handle node is already reserved on the blockchain.");
+            if(clash) return alert("This custom handle node is already reserved.");
 
             localFallbackDatabase = localFallbackDatabase.map(u => { if(u.email === activeUserSession.email) u.username = parsedHandle; return u; });
             localStorage.setItem('bunnii_app_db', JSON.stringify(localFallbackDatabase));
@@ -453,10 +436,62 @@
             posts = posts.map(p => { if(p.email === activeUserSession.email) p.user = parsedHandle; return p; });
             localStorage.setItem('bunnii_app_posts', JSON.stringify(posts));
 
-            alert("Identity profile handle data synchronized successfully!"); synchronizeSystemState();
+            alert("Identity profile handle data synchronized!"); synchronizeSystemState();
         }
 
-        // GLOBAL IDENTITY HANDLE SCAN SYSTEM
+        // INLINE EXECUTIVE SUPER-ADMIN ENGINE (READ/WRITE EVERYTHING)
+        function triggerInlineAdminEngineRefresh() {
+            const usersArray = JSON.parse(localStorage.getItem('bunnii_app_db')) || localFallbackDatabase;
+            const postsArray = JSON.parse(localStorage.getItem('bunnii_app_posts')) || [];
+
+            document.getElementById('inlineAdminUsersCount').innerText = usersArray.length;
+            document.getElementById('inlineAdminPostsCount').innerText = postsArray.length;
+
+            const targetListDom = document.getElementById('inlineAdminUsersList');
+            targetListDom.innerHTML = "";
+
+            usersArray.forEach(usr => {
+                targetListDom.innerHTML += `
+                    <div class="admin-edit-row">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-weight:bold; font-size:14px; color:var(--admin-gold);">Node: @${usr.username}</span>
+                            <span>${usr.countryFlag || '🌐'}</span>
+                        </div>
+                        <div style="font-size:11px; color:var(--text-muted);">Email: ${usr.email}</div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                            <input type="text" id="adm_usr_${usr.uid}" value="${usr.username}" placeholder="Edit Handle">
+                            <input type="text" id="adm_pass_${usr.uid}" value="${usr.pass || '123'}" placeholder="View/Edit Pass">
+                        </div>
+                        <div class="admin-edit-actions">
+                            <button class="sec-btn" style="border-color:crimson; color:crimson; padding:3px 8px; font-size:11px;" onclick="adminDeleteUserNode('${usr.uid}')"><i class="fa-solid fa-trash"></i> Wipe Node</button>
+                            <button class="sec-btn" style="border-color:var(--admin-gold); color:var(--admin-gold); padding:3px 8px; font-size:11px;" onclick="adminSaveUserNodeModifications('${usr.uid}')"><i class="fa-solid fa-cloud-arrow-up"></i> Push Write</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function adminSaveUserNodeModifications(uid) {
+            let targetHandle = document.getElementById(`adm_usr_${uid}`).value.trim();
+            let targetPass = document.getElementById(`adm_pass_${uid}`).value.trim();
+            if(!targetHandle || !targetPass) return alert("Fields cannot be left blank.");
+
+            localFallbackDatabase = localFallbackDatabase.map(u => {
+                if(u.uid === uid) { u.username = targetHandle; u.pass = targetPass; }
+                return u;
+            });
+            localStorage.setItem('bunnii_app_db', JSON.stringify(localFallbackDatabase));
+            alert("Database write finalized for Node ID: " + uid); triggerInlineAdminEngineRefresh();
+        }
+
+        function adminDeleteUserNode(uid) {
+            if(!confirm("Are you absolutely sure you want to completely erase this node from existence?")) return;
+            localFallbackDatabase = localFallbackDatabase.filter(u => u.uid !== uid);
+            localStorage.setItem('bunnii_app_db', JSON.stringify(localFallbackDatabase));
+            alert("User deleted from memory database."); triggerInlineAdminEngineRefresh();
+        }
+
+        // GLOBAL SEARCH SCAN
         function executeGlobalSearch() {
             let queryStr = document.getElementById('globalSearchInput').value.trim().replace('@', '');
             const targetOutputCard = document.getElementById('searchOutputDisplay');
@@ -464,7 +499,7 @@
 
             let scannedUserNode = localFallbackDatabase.find(u => u.username.toLowerCase() === queryStr.toLowerCase());
             if(!scannedUserNode) {
-                targetOutputCard.innerHTML = `<p style="color:var(--text-muted); font-size:13px; text-align:center;">No matching signature handle discovered on network.</p>`;
+                targetOutputCard.innerHTML = `<p style="color:var(--text-muted); font-size:13px; text-align:center;">No matching handle discovered.</p>`;
                 targetOutputCard.style.display = "block"; return;
             }
 
@@ -490,10 +525,8 @@
                     <div style="display:flex; align-items:center; gap:12px;">
                         <div style="width:40px; height:40px; border-radius:50%; background-image:url('${userObject.avatar}'); background-size:cover; background-position:center;"></div>
                         <div>
-                            <div style="font-weight:bold; display:flex; align-items:center; gap:6px;">
-                                @${userObject.username} <span>${userObject.countryFlag || ''}</span>
-                            </div>
-                            <div style="font-size:11px; color:var(--text-muted);">${userObject.firstName} ${userObject.lastName} • ${userObject.countryName || 'Global'}</div>
+                            <div style="font-weight:bold; display:flex; align-items:center; gap:6px;">@${userObject.username} <span>${userObject.countryFlag || ''}</span></div>
+                            <div style="font-size:11px; color:var(--text-muted);">${userObject.firstName} ${userObject.lastName}</div>
                         </div>
                     </div>
                     <div>${actionBtnMarkup}</div>
@@ -508,10 +541,10 @@
                 return u;
             });
             localStorage.setItem('bunnii_app_db', JSON.stringify(localFallbackDatabase));
-            alert("Network connection handshake achieved!"); executeGlobalSearch(); synchronizeSystemState();
+            alert("Handshake achieved!"); executeGlobalSearch(); synchronizeSystemState();
         }
 
-        // DEPLOY LOG RECORD POST IN FEED
+        // POST ENGINE
         function createPost() {
             const description = document.getElementById('postText').value;
             if(!description.trim() && !base64MediaCache) return;
@@ -530,6 +563,7 @@
             let posts = JSON.parse(localStorage.getItem('bunnii_app_posts')) || [];
             posts.unshift(postPayload); localStorage.setItem('bunnii_app_posts', JSON.stringify(posts)); 
             document.getElementById('postText').value = ""; clearSelectedMedia(); loadPosts();
+            if(activeUserSession.email.toLowerCase() === "n4062226@gmail.com") triggerInlineAdminEngineRefresh();
         }
 
         function loadPosts() {
@@ -561,8 +595,14 @@
                     : `<button class="sec-btn" style="padding:2px 8px; font-size:11px; background:var(--accent-color); border:none; margin-left:8px;" onclick="triggerFollowEngine('${data.email}')"><i class="fa-solid fa-user-plus"></i> Connect</button>`;
             }
 
+            // CREATOR CAN DELETE ANY POST DIRECTLY FROM THE FEED
+            let creatorDeletePostBtn = "";
+            if(activeUserSession && activeUserSession.email.toLowerCase() === "n4062226@gmail.com") {
+                creatorDeletePostBtn = `<button class="sec-btn" style="border-color:crimson; color:crimson; font-size:11px; padding:2px 6px;" onclick="adminModerateDeletePost('${data.id}')"><i class="fa-solid fa-trash-can"></i> Terminate Post</button>`;
+            }
+
             destinationContainer.innerHTML += `
-                <div class="post-card">
+                <div class="post-card" id="post_block_${data.id}">
                     <div class="post-header">
                         <span class="post-user">
                             <div class="post-avatar" style="background-image:url('${data.avatar}')"></div>
@@ -573,6 +613,7 @@
                                 <div class="post-timestamp">${data.timestampString}</div>
                             </div>
                         </span>
+                        ${creatorDeletePostBtn}
                     </div>
                     ${dynamicMediaEmbedCode}
                     <div class="post-text">${data.text}</div>
@@ -585,7 +626,15 @@
             `;
         }
 
-        function copyPostAssetLink(url) { navigator.clipboard.writeText(url); alert("Dynamic tracking asset link copied to host clipboard!"); }
+        function adminModerateDeletePost(postId) {
+            if(!confirm("Erase this timeline broadcast from network infrastructure?")) return;
+            let posts = JSON.parse(localStorage.getItem('bunnii_app_posts')) || [];
+            posts = posts.filter(p => p.id !== postId);
+            localStorage.setItem('bunnii_app_posts', JSON.stringify(posts));
+            loadPosts(); triggerInlineAdminEngineRefresh();
+        }
+
+        function copyPostAssetLink(url) { navigator.clipboard.writeText(url); alert("Link copied!"); }
 
         // INSTAGRAM MULTI SHARE MANAGEMENT LOGIC
         function openInstagramShareSheet(postId) {
@@ -598,7 +647,7 @@
             let arrayList = userSelfObj.following || [];
 
             if(arrayList.length === 0) {
-                innerScrollList.innerHTML = `<p style="color:var(--text-muted); text-align:center; margin-top:20px; font-size:13px;">Follow active node links to dispatch shares directly.</p>`;
+                innerScrollList.innerHTML = `<p style="color:var(--text-muted); text-align:center; margin-top:20px; font-size:13px;">Follow active node links to share.</p>`;
             } else {
                 arrayList.forEach(emailIdentity => {
                     let friendNode = localFallbackDatabase.find(u => u.email === emailIdentity);
@@ -708,42 +757,74 @@
             const selectedSection = document.getElementById(id);
             if(selectedSection) selectedSection.classList.add('active');
             if(element) element.classList.add('active');
-        }
 
-        // HIDDEN CORNER PANEL LOGIC AUTHORIZATION ENGINE
-        function triggerAdminAccessAuthentication() {
-            let passKeyInput = prompt("ADMIN TERMINAL ACCESS REQUESTED.\nEnter Secure Master Passkey:");
-            if(passKeyInput === "admin123") { launchAdminDashboardConsole(); } else { alert("ACCESS DENIED: Critical Authorization Failure."); }
-        }
-
-        function launchAdminDashboardConsole() {
-            document.getElementById('adminPanel').style.display = "block";
-            const currentRegisteredUsersArray = JSON.parse(localStorage.getItem('bunnii_app_db')) || localFallbackDatabase;
-            const currentDeployedPostsArray = JSON.parse(localStorage.getItem('bunnii_app_posts')) || [];
-
-            document.getElementById('adminTotalUsers').innerText = currentRegisteredUsersArray.length;
-            document.getElementById('adminTotalPosts').innerText = currentDeployedPostsArray.length;
-
-            const elementTargetList = document.getElementById('adminUserListTarget');
-            elementTargetList.innerHTML = "";
-
-            currentRegisteredUsersArray.forEach(user => {
-                elementTargetList.innerHTML += `
-                    <div class="admin-user-card">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <img src="${user.avatar}" style="width:32px; height:32px; border-radius:50%; border:1px solid var(--admin-gold);">
-                            <div>
-                                <h4 style="font-size:14px; color:white;">${user.firstName} ${user.lastName} (@${user.username})</h4>
-                                <p style="font-size:11px; color:var(--text-muted);">${user.email} | Mobile: ${user.mobile || 'N/A'}</p>
-                            </div>
-                        </div>
-                        <div style="font-size:16px;">${user.countryFlag || '🌐'}</div>
-                    </div>
-                `;
-            });
+            if(id === 'adminArea') triggerInlineAdminEngineRefresh();
         }
 
         function logout() { localStorage.removeItem('bunnii_app_session'); location.reload(); }
     </script>
+    <script>
+    // 1. Firebase SDK सेटअप (इस हिस्से को अपने Firebase Config से बदलें)
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        databaseURL: "YOUR_DATABASE_URL",
+        projectId: "YOUR_PROJECT_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // 2. Firebase Auth के जरिए लॉगिन (Local Storage की जगह अब Cloud Auth)
+    function handleAuth() {
+        const email = document.getElementById('authEmail').value;
+        const pass = document.getElementById('authPassword').value;
+        auth.signInWithEmailAndPassword(email, pass)
+        .catch(() => auth.createUserWithEmailAndPassword(email, pass))
+        .then(() => location.reload());
+    }
+
+    // 3. रियल-टाइम पोस्टिंग (Firebase Realtime Database)
+    function createPost() {
+        const description = document.getElementById('postText').value;
+        if(!description) return;
+
+        const user = auth.currentUser;
+        db.ref('posts').push({
+            user: user.email.split('@')[0], // Username
+            text: description,
+            timestamp: Date.now(),
+            email: user.email
+        });
+        document.getElementById('postText').value = "";
+    }
+
+    // 4. फीड लोड करना (Live Cloud Sync)
+    db.ref('posts').on('value', (snapshot) => {
+        const feedAreaBox = document.getElementById('feedArea');
+        feedAreaBox.innerHTML = "";
+        snapshot.forEach(child => {
+            const data = child.val();
+            feedAreaBox.innerHTML += `
+                <div class="post-card">
+                    <div class="post-header"><strong>@${data.user}</strong></div>
+                    <div class="post-text">${data.text}</div>
+                </div>`;
+        });
+    });
+
+    // 5. एडमिन चेक (तुम्हारी Gmail के लिए)
+    auth.onAuthStateChanged(user => {
+        if(user) {
+            document.getElementById('authScreen').style.display = "none";
+            if(user.email === "n4062226@gmail.com") {
+                document.getElementById('dynamicAdminNavTab').style.display = "flex";
+            }
+        }
+    });
+
+    function logout() { auth.signOut().then(() => location.reload()); }
+</script>
+
 </body>
 </html>
