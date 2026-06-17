@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bunnii Media App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-primary: #05070b;
+            --bg-secondary: #0d111a;
+            --accent-color: #ff3366;
+            --accent-glow: rgba(255, 51, 102, 0.4);
+            --text-main: #ffffff;
+            --text-muted: #6c7d93;
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --glass-bg: rgba(13, 17, 26, 0.75);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: '-apple-system', BlinkMacSystemFont, sans-serif; }
+        body { background-color: var(--bg-primary); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* --- BACKGROUND STREAM --- */
+        .emoji-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: 1; pointer-events: none; }
+        .floating-3d-emoji { 
+            position: absolute; width: 52px; height: 52px; object-fit: contain; opacity: 0.15; 
+            animation: slideDiagonalApple 15s linear infinite; 
+        }
+        @keyframes slideDiagonalApple { 
+            0% { transform: translate(120vw, -20vh) rotate(0deg); } 
+            100% { transform: translate(-20vw, 120vh) rotate(360deg); } 
+        }
+
+        /* --- AUTH SYSTEM LAYER --- */
+        #authScreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at 50% 30%, #151124 0%, var(--bg-primary) 100%); z-index: 1000; display: flex; justify-content: center; align-items: center; }
+        .auth-container { width: 90%; max-width: 400px; padding: 30px; background: var(--glass-bg); backdrop-filter: blur(35px); border: 1px solid var(--glass-border); border-radius: 32px; text-align: center; box-shadow: 0 40px 80px rgba(0,0,0,0.7); max-height: 85vh; overflow-y: auto; }
+        .auth-container h2 { font-size: 32px; font-weight: 900; margin-bottom: 20px; }
+        .auth-container h2 span { color: var(--accent-color); text-shadow: 0 0 25px var(--accent-glow); }
+        .auth-container input, .auth-container select { width: 100%; padding: 14px 16px; margin: 8px 0; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--glass-border); border-radius: 14px; outline: none; font-size: 15px; color: var(--text-main); }
+        .auth-container select option { background: var(--bg-secondary); color: white; }
+        .auth-btn { width: 100%; background: linear-gradient(135deg, var(--accent-color), #ff5e62); color: #ffffff; border: none; padding: 16px; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 15px; box-shadow: 0 8px 25px var(--accent-glow); }
+        .toggle-auth { margin-top: 20px; color: var(--text-muted); cursor: pointer; font-size: 14px; text-decoration: underline; }
+
+        /* --- HEADER LAYOUT --- */
+        .top-header { height: 65px; background: rgba(5, 7, 11, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; padding: 0 24px; position: relative; z-index: 90; }
+        .top-logo { font-size: 24px; font-weight: 900; cursor: pointer; }
+        .top-logo span { color: var(--accent-color); }
+        .logout-icon { color: #ff4d4d; font-size: 18px; cursor: pointer; background: rgba(255,77,77,0.1); padding: 10px; border-radius: 50%; width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; }
+
+        /* --- MAIN ENGINE WRAPPER --- */
+        .main-content { flex: 1; width: 100%; max-width: 600px; margin: 0 auto; height: calc(100vh - 140px); overflow: hidden; position: relative; z-index: 5; }
+        .app-section { display: none; padding: 15px; height: 100%; overflow-y: auto; }
+        .app-section.active { display: block; }
+
+        /* --- SEARCH ARCHITECTURE --- */
+        .search-container { background: var(--bg-secondary); border: 1px solid var(--glass-border); padding: 12px; border-radius: 16px; margin-bottom: 15px; display: flex; gap: 10px; }
+        .search-container input { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 10px 14px; border-radius: 10px; color: white; outline: none; }
+        .search-result-box { display: none; background: #111622; border: 1px solid var(--accent-color); border-radius: 16px; padding: 12px; margin-bottom: 15px; }
+
+        /* --- POST INTERFACES --- */
+        .create-post { background: var(--bg-secondary); border: 1px solid var(--glass-border); border-radius: 20px; padding: 18px; margin-bottom: 20px; }
+        .create-post textarea { width: 100%; border: none; background: transparent; resize: none; outline: none; font-size: 15px; height: 60px; color: var(--text-main); }
+        .gallery-trigger-bar { display: flex; gap: 10px; margin-top: 12px; }
+        .gallery-btn { flex: 1; background: rgba(255, 255, 255, 0.05); border: 1px dashed var(--glass-border); color: white; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .media-preview-container { display: none; position: relative; margin-top: 15px; border-radius: 12px; overflow: hidden; max-height: 200px; border: 1px solid var(--accent-color); }
+        .media-preview-container img, .media-preview-container video { width: 100%; height: 100%; object-fit: cover; }
+        .remove-preview-btn { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; z-index: 10; }
+
+        .post-card { background: var(--bg-secondary); border: 1px solid var(--glass-border); border-radius: 20px; padding: 18px; margin-bottom: 18px; }
+        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .post-user { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 14px; }
+        .post-timestamp { font-size: 11px; color: var(--text-muted); }
+        .post-avatar { width: 36px; height: 36px; border-radius: 50%; background-size: cover; background-position: center; border: 1.5px solid var(--accent-color); }
+        .post-text { font-size: 15px; line-height: 1.5; color: #e1e7f0; margin-bottom: 12px; }
+        .post-media-slot { margin-bottom: 12px; border-radius: 16px; overflow: hidden; width: 100%; border: 1px solid var(--glass-border); background: #000; }
+        .post-media-slot img, .post-media-slot video { width: 100%; display: block; max-height: 380px; object-fit: cover; }
+        
+        .post-actions { display: flex; gap: 16px; border-top: 1px solid var(--glass-border); padding-top: 12px; }
+        .action-btn { background: none; border: none; cursor: pointer; font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; font-weight: 600; }
+        .action-btn:hover { color: white; }
+
+        /* --- INSTAGRAM SHARE POPUP DRAWER --- */
+        .share-popup-sheet { position: fixed; bottom: -100%; left: 0; width: 100vw; height: 60vh; background: #0b0f19; border-top: 2px solid var(--accent-color); border-top-left-radius: 32px; border-top-right-radius: 32px; z-index: 3000; padding: 25px; transition: 0.4s cubic-bezier(0.1, 0.8, 0.3, 1); box-shadow: 0 -20px 50px rgba(0,0,0,0.8); display: flex; flex-direction: column; }
+        .share-popup-sheet.active { bottom: 0; }
+        .share-sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .following-share-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .share-user-row { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--glass-border); }
+        .share-send-btn { background: var(--accent-color); color: white; border: none; padding: 6px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
+
+        /* --- PROFILE CONFIGURATION WITH EDIT & COUNTRY BADGE --- */
+        .profile-header-card { background: var(--bg-secondary); border: 1px solid var(--glass-border); padding: 25px 15px; border-radius: 24px; text-align: center; margin-bottom: 20px; }
+        .profile-pic-container { position: relative; width: 90px; height: 90px; margin: 0 auto 12px; }
+        .profile-pic { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--accent-color); background-size: cover; background-position: center; }
+        .edit-avatar-badge { position: absolute; bottom: 0; right: 0; background: var(--accent-color); width: 28px; height: 28px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; border: 2px solid var(--bg-secondary); box-shadow: 0 4px 10px var(--accent-glow); color: white; font-size: 12px; transition: transform 0.2s; }
+        .edit-avatar-badge:hover { transform: scale(1.1); }
+        
+        .profile-editable-field { background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: white; padding: 10px; border-radius: 8px; text-align: center; font-size: 15px; width: 80%; margin: 5px auto 12px; display: block; outline: none; font-weight: bold; }
+        .fixed-email-tag { color: var(--text-muted); font-size: 13px; font-weight: 500; display: block; margin-bottom: 5px; }
+        .country-flag-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 51, 102, 0.15); border: 1px solid var(--accent-color); padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; margin-top: 5px; color: white; }
+        
+        .stats-matrix { display: flex; justify-content: space-around; margin-top: 20px; border-top: 1px solid var(--glass-border); padding-top: 15px; }
+        .stat-node { display: flex; flex-direction: column; }
+        .stat-val { font-size: 18px; font-weight: 800; }
+        .stat-label { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+        .sec-btn { background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); color: white; padding: 8px 16px; border-radius: 10px; font-size: 13px; cursor: pointer; font-weight: 600; }
+
+        /* --- CHAT ENVIRONMENT --- */
+        .chat-layout { display: flex; flex-direction: column; height: 100%; }
+        .chat-users-list { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; flex: 1; }
+        .user-chat-card { background: var(--bg-secondary); border: 1px solid var(--glass-border); border-radius: 18px; display: flex; justify-content: space-between; align-items: center; padding: 15px; cursor: pointer; }
+        .chat-window { display: none; flex-direction: column; height: 100%; background: var(--bg-secondary); border-radius: 24px; border: 1px solid var(--glass-border); overflow: hidden; }
+        .chat-header { background: rgba(0,0,0,0.4); padding: 15px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
+        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .msg-bubble { max-width: 75%; padding: 12px 16px; border-radius: 18px; font-size: 14px; }
+        .msg-sent { background: var(--accent-color); align-self: flex-end; border-bottom-right-radius: 4px; }
+        .msg-received { background: rgba(255,255,255,0.08); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .shared-card-bubble { border: 1px solid var(--accent-color); background: rgba(0,0,0,0.3); border-radius: 12px; padding: 10px; margin-top: 5px; font-size: 12px; }
+        .chat-input-area { padding: 12px; background: rgba(0,0,0,0.3); border-top: 1px solid var(--glass-border); display: flex; gap: 10px; }
+        .chat-input-area input { flex: 1; background: var(--bg-primary); border: 1px solid var(--glass-border); border-radius: 14px; padding: 14px; color: white; outline: none; }
+
+        /* --- BOTTOM CONTROLS --- */
+        .bottom-nav { height: 75px; background: rgba(13, 17, 26, 0.85); backdrop-filter: blur(25px); border-top: 1px solid var(--glass-border); display: flex; justify-content: space-around; align-items: center; position: sticky; bottom: 0; width: 100%; z-index: 99; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; width: 33%; height: 100%; gap: 4px; }
+        .nav-item.active { color: var(--accent-color); }
+    </style>
+</head>
+<body>
+
+    <div class="emoji-bg" id="emojiCanvas"></div>
+
+    <div id="authScreen">
+        <div class="auth-container">
+            <h2><span>Bunnii</span> Media</h2>
+            
+            <div id="signupFieldsContainer" style="display: none; border-bottom: 1px solid var(--glass-border); margin-bottom: 10px; padding-bottom: 5px;">
+                <input type="text" id="regFirstName" placeholder="First Name">
+                <input type="text" id="regLastName" placeholder="Last Name">
+                <input type="tel" id="regMobile" placeholder="Mobile Number">
+                <select id="regCountry">
+                    <option value="🇮🇳|India">India 🇮🇳</option>
+                    <option value="🇺🇸|USA">USA 🇺🇸</option>
+                    <option value="🇬🇧|UK">UK 🇬🇧</option>
+                    <option value="🇦🇪|UAE">UAE 🇦🇪</option>
+                    <option value="🇨🇦|Canada">Canada 🇨🇦</option>
+                </select>
+            </div>
+
+            <input type="email" id="authEmail" placeholder="Enter Your Gmail">
+            <input type="password" id="authPassword" placeholder="Security Token">
+            <button class="auth-btn" id="mainAuthButton" onclick="handleAuth()">Authorize Node Connection</button>
+            <p class="toggle-auth" onclick="toggleAuthMode()" id="toggleText">Sign Up New Node</p>
+        </div>
+    </div>
+
+    <div class="top-header">
+        <div class="top-logo" onclick="switchSection('home')">Bunnii<span>.media</span></div>
+        <div class="logout-icon" onclick="logout()"><i class="fa-solid fa-power-off"></i></div>
+    </div>
+
+    <div class="share-popup-sheet" id="globalShareSheet">
+        <div class="share-sheet-header">
+            <h3 style="font-weight: 800;"><i class="fa-solid fa-paper-plane" style="color:var(--accent-color);"></i> Share Post</h3>
+            <button class="sec-btn" style="padding: 4px 12px;" onclick="closeShareSheet()">Close</button>
+        </div>
+        <div class="following-share-list" id="shareSheetTargetList"></div>
+    </div>
+
+    <div class="main-content">
+        
+        <div id="home" class="app-section active">
+            <div class="search-container">
+                <input type="text" id="globalSearchInput" placeholder="Type @username to locate handle...">
+                <button class="sec-btn" onclick="executeGlobalSearch()"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+
+            <div class="search-result-box" id="searchOutputDisplay"></div>
+
+            <div class="create-post">
+                <textarea id="postText" placeholder="Deploy data, logs or multimedia to the stream..."></textarea>
+                <input type="file" id="galleryPhotoInput" accept="image/*" style="display: none;" onchange="processGalleryFile(this, 'image')">
+                <input type="file" id="galleryVideoInput" accept="video/*" style="display: none;" onchange="processGalleryFile(this, 'video')">
+
+                <div class="gallery-trigger-bar">
+                    <button class="gallery-btn" onclick="document.getElementById('galleryPhotoInput').click()"><i class="fa-solid fa-image" style="color: #4cd964;"></i> Images</button>
+                    <button class="gallery-btn" onclick="document.getElementById('galleryVideoInput').click()"><i class="fa-solid fa-video" style="color: #ff3b30;"></i> Videos</button>
+                </div>
+
+                <div class="media-preview-container" id="mediaPreviewBox">
+                    <button class="remove-preview-btn" onclick="clearSelectedMedia()"><i class="fa-solid fa-xmark"></i></button>
+                    <div id="previewTargetSlot" style="width:100%; height:100%;"></div>
+                </div>
+
+                <button class="auth-btn" style="width: auto; float: right; padding: 8px 20px; margin-top: 12px;" onclick="createPost()">Deploy Post</button>
+                <div style="clear: both;"></div>
+            </div>
+            
+            <div id="feedArea"></div>
+        </div>
+
+        <div id="chats" class="app-section" style="height: 100%;">
+            <div class="chat-layout" id="chatUsersListView">
+                <h3 style="margin-bottom: 15px;">Secure Streams</h3>
+                <div class="chat-users-list" id="chatListTarget"></div>
+            </div>
+            
+            <div class="chat-window" id="activeChatFrame">
+                <div class="chat-header">
+                    <span id="chatTargetName" style="font-weight: 700;"></span>
+                    <button class="sec-btn" style="padding:4px 10px; font-size:11px;" onclick="exitChatWindow()">Back</button>
+                </div>
+                <div class="chat-messages" id="chatMsgArea"></div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatMsgInputField" placeholder="Type direct payload message...">
+                    <button class="sec-btn" style="background:var(--accent-color); border:none;" onclick="sendSecureMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div id="profile" class="app-section">
+            <div class="profile-header-card">
+                <div class="profile-pic-container">
+                    <div class="profile-pic" id="myProfilePic"></div>
+                    <label for="avatarFileInput" class="edit-avatar-badge">
+                        <i class="fa-solid fa-camera"></i>
+                    </label>
+                    <input type="file" id="avatarFileInput" accept="image/*" style="display: none;" onchange="updateProfilePictureEngine(this)">
+                </div>
+                
+                <input type="text" class="profile-editable-field" id="profileUserHandleField" placeholder="@handle">
+                <span class="fixed-email-tag" id="profileEmailLabel">user@gmail.com</span>
+                <span class="fixed-email-tag" id="profileMobileLabel" style="color:var(--text-muted); font-size:12px;">+91 0000000000</span>
+                
+                <div class="country-flag-badge" id="myCountryBadge">🇮🇳 India</div>
+                <div style="margin-top: 15px;">
+                    <button class="sec-btn" style="background: var(--accent-color); border:none;" onclick="saveProfileIdentityData()"><i class="fa-solid fa-floppy-disk"></i> Save Profile</button>
+                </div>
+
+                <div class="stats-matrix">
+                    <div class="stat-node"><div class="stat-val" id="statPostsCount">0</div><div class="stat-label">Posts</div></div>
+                    <div class="stat-node"><div class="stat-val" id="statFollowers">0</div><div class="stat-label">Followers</div></div>
+                    <div class="stat-node"><div class="stat-val" id="statFollowing">0</div><div class="stat-label">Following</div></div>
+                </div>
+            </div>
+            <h4 style="margin-bottom: 12px; color: var(--text-muted); font-weight: 800; font-size:11px;">My Deployment Ledger</h4>
+            <div id="myPostsArea"></div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchSection('home', this)"><i class="fa-solid fa-house"></i><span>Home</span></div>
+        <div class="nav-item" onclick="switchSection('chats', this)"><i class="fa-solid fa-message"></i><span>Chats</span></div>
+        <div class="nav-item" onclick="switchSection('profile', this)"><i class="fa-solid fa-user"></i><span>Profile</span></div>
+    </div>
+
+    <script>
+        // BACKGROUND GLOW STREAM
+        const apple3DEmojis = ["https://img.icons8.com/3d-fluency/94/rocket.png", "https://img.icons8.com/3d-fluency/94/fire.png", "https://img.icons8.com/3d-fluency/94/star.png", "https://img.icons8.com/3d-fluency/94/heart-suit.png"];
+        function generateApple3DStream() {
+            const canvas = document.getElementById('emojiCanvas');
+            for(let i = 0; i < 8; i++) {
+                const img = document.createElement('img'); img.className = 'floating-3d-emoji';
+                img.src = apple3DEmojis[Math.floor(Math.random() * apple3DEmojis.length)];
+                img.style.left = Math.random() * 100 + 'vw'; img.style.top = Math.random() * 80 + 'vh';
+                img.style.animationDuration = (12 + Math.random() * 6) + 's';
+                canvas.appendChild(img);
+            }
+        }
+        generateApple3DStream();
+
+        // RUNTIME LOCAL STATE DATABASE ENGINE 
+        let localFallbackDatabase = JSON.parse(localStorage.getItem('bunnii_app_db')) || [
+            { uid: 'u_1', username: 'imanshu_999', email: 'imanshu@gmail.com', firstName: 'Imanshu', lastName: 'Dev', mobile: '9999999999', countryFlag: '🇮🇳', countryName: 'India', avatar: 'https://api.dicebear.com/7.x/pixel-art/svg?seed=imanshu', followers: [], following: [] },
+            { uid: 'u_2', username: 'rockstar_dev', email: 'dev@gmail.com', firstName: 'Rock', lastName: 'Star', mobile: '8888888888', countryFlag: '🇺🇸', countryName: 'USA', avatar: 'https://api.dicebear.com/7.x/pixel-art/svg?seed=dev', followers: [], following: [] }
+        ];
+        
+        let activeUserSession = JSON.parse(localStorage.getItem('bunnii_app_session')) || null;
+        let selectedChatUser = null;
+        let base64MediaCache = null;
+        let cachedMediaType = null;
+        let targetSharePostId = null;
+        let isSignUpMode = false;
+
+        function toggleAuthMode() {
+            isSignUpMode = !isSignUpMode;
+            document.getElementById('signupFieldsContainer').style.display = isSignUpMode ? "block" : "none";
+            document.getElementById('mainAuthButton').innerText = isSignUpMode ? "Register & Connect Node" : "Authorize Node Connection";
+            document.getElementById('toggleText').innerText = isSignUpMode ? "Already Registered? Log In" : "Sign Up New Node";
+        }
+
+        function processGalleryFile(input, type) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    base64MediaCache = e.target.result; cachedMediaType = type;
+                    document.getElementById('mediaPreviewBox').style.display = "block";
+                    document.getElementById('previewTargetSlot').innerHTML = type === 'image' ? `<img src="${base64MediaCache}">` : `<video src="${base64MediaCache}" controls autoplay loop></video>`;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function clearSelectedMedia() {
+            base64MediaCache = null; cachedMediaType = null;
+            document.getElementById('mediaPreviewBox').style.display = "none";
+        }
+
+        // PROFILE PICTURE ENGINE 
+        function updateProfilePictureEngine(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64Img = e.target.result;
+                    document.getElementById('myProfilePic').style.backgroundImage = `url('${base64Img}')`;
+                    
+                    activeUserSession.avatar = base64Img;
+                    localStorage.setItem('bunnii_app_session', JSON.stringify(activeUserSession));
+                    
+                    localFallbackDatabase = localFallbackDatabase.map(u => {
+                        if(u.email === activeUserSession.email) { u.avatar = base64Img; }
+                        return u;
+                    });
+                    localStorage.setItem('bunnii_app_db', JSON.stringify(localFallbackDatabase));
+                    
+                    let posts = JSON.parse(localStorage.getItem('bunnii_app_posts')) || [];
+                    posts = posts.map(p => {
+                        if(p.email === activeUserSession.email) { p.avatar = base64Img; }
+                        return p;
+                    });
+                    localStorage.setItem('bunnii_app_posts', JSON.stringify(posts));
+                    
+                    alert("Profile multimedia updated successfully!");
+                    loadPosts();
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function handleAuth() {
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value;
+            if(!email) return alert("Gmail account criteria empty.");
+
+            let existingUser = localFallbackDatabase.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+            if(isSignUpMode) {
+                if(existingUser) return alert("Gmail matching record already discovered.");
+                
+                const fName = document.getElementById('regFirstName').value.trim();
+                const lName = document.getElementById('regLastName').value.trim();
+                const mobileNum = document.getElementById('regMobile').value.trim();
+                const countryRaw = document.getElementById('regCountry').value; // format: Flag|Name
+                
+                if(!fName || !lName || !mobileNum) return alert("Please fill all the profile fields!");
+
+                const countrySplit = countryRaw.split('|');
+                let handle = fName.toLowerCase() + Date.now().toString().slice(-4);
+
+                let newUser = { 
+                    uid: 'u_' + Date.now(), 
+                    username: handle, 
+                    email: email, 
+                    firstName: fName,
+                    lastName: lName,
+                    mobile: mobileNum,
+                    countryFlag: countrySplit[0],
+                    countryName: countrySplit[1],
+                    avatar: "https://api.dicebear.com/7.x/pixel-art/svg?seed=" + handle, 
+                    followers: [], 
+                    following: [] 
+                };
+
+                localFallbackDatabase.push(newUser);
+                localStorage.setItem('bunnii_app_db', JSON.stringify(localFallbackDatabase));
+                existingUser = newUser;
+            }
+
+            if(!existingUser) {
+                return alert("No account found with this Gmail. Kindly Register first!");
+            }
+
+            activeUserSession = existingUser;
+            localStorage.setItem('bunnii_app_session', JSON.stringify(activeUserSession));
+            synchronizeSystemState();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if(activeUserSession) {
+                synchronizeSystemState();
+            } else {
+                document.getElementById('authScreen').style.display = "flex";
+            }
+        });
+
+        function synchronizeSystemState() {
+            if(!activeUserSession) return;
+            document.getElementById('authScreen').style.display = "none";
+            
+            let me = localFallbackDatabase.find(u => u.email === activeUserSession.email) || activeUserSession;
+            activeUserSession = me;
+            localStorage.setItem('bunnii_app_session', JSON.stringify(activeUserSession));
+
+            document.getElementById('profileEmailLabel').innerText = activeUserSession.email;
+            document.getElementById('profileMobileLabel').innerText = "Mobile: " + (activeUserSession.mobile || "N/A");
+            document.getElementById('profileUserHandleField').value = '@' + activeUserSession.username;
+            document.getElementById('myProfilePic').style.backgroundImage = `url('${activeUserSession.avatar}')`;
+            
+            // Setup dynamic Country Flag and Label text
+            document.getElementById('myCountryBadge').innerHTML = `${activeUserSession.countryFlag || '🌐'} ${activeUserSession.countryName || 'Global'}`;
+
+            document.getElementById('statFollowers').innerText = me.followers ? me.followers.length : 0;
+            document.getElementById('statFollowing').innerText = me.following ? me.following.length : 0;
+
+            loadPosts(); loadChatTerminalUsers();
+        }
+
+        function saveProfileIdentityData() {
+            let fieldVal = document.getElementById('profileUserHandleField').value.trim();
+            let cleanedHandle = fieldVal.replace('@', '');
+            if(!cleanedHandle) return alert("Handle input empty.");
+
+            let match = localFallbackDatabase.find(u => u.username === cleanedHandle && u.email !== activeUserSession.email);
+            if(match) return alert("This username handle is already reserved.");
+
+            localFallbackDatabase = localFallbackDatabase.map(u => {
+                if(u.email === activeUserSession.email) { u.username = cleanedHandle; }
+                return u;
+            });
+            localStorage.setItem('bunnii_app_db', JSON.stringify(localFallbackDatabase));
+            activeUserSession.username = cleanedHandle;
+            localStorage.setItem('bunnii_app_session', JSON.stringify(activeUserSession));
+            
+            let posts = JSON.parse(localStorage.getItem('bunnii_app_posts')) || [];
+            posts = posts.map(p => {
+                if(p.email === activeUserSession.email) { p.user = cleanedHandle; }
+                return p;
+            });
+            localStorage.setItem('bunnii_app_posts', JSON.stringify(posts));
+
+            alert("Handle identity saved successfully!");
+            synchronizeSystemState();
+        }
+
+        function executeGlobalSearch() {
+            let q = document.getElementById('globalSearchInput').value.trim().replace('@', '');
+            const box = document.getElementById('searchOutputDisplay');
+            if(!q) { box.style.display = "none"; return; }
+
+            let target = localFallbackDatabase.find(u => u.username.toLowerCase() === q.toLowerCase());
+            if(!target) {
+                box.innerHTML = `<p style="color:var(--text-muted); font-size:13px;">No matching handle discovered.</p>`;
+                box.style.display = "block";
+                return;
+            }
+
+            box.style.display = "block";
+            renderSearchTargetCard(target, box);
+        }
+
+        function renderSearchTargetCard(u, container) {
+            let myAccount = localFallbackDatabase.find(x => x.email === activeUserSession.email) || activeUserSession;
+            let isFollowing = myAccount.following && myAccount.following.includes(u.email);
+            
+            let actionBtnHtml = "";
+            if(u.email !== activeUserSession.email) {
+                if(isFollowing) {
+                    actionBtnHtml = `<button class="sec-btn" style="background:#00ffcc; color:black; border:none;" onclick="switchSection('chats'); openSecureChatChannel('${u.email}', '${u.username}')"><i class="fa-solid fa-message"></i> Chat</button>`;
+                } else {
+                    actionBtnHtml = `<button class="sec-btn" style="background:var(--accent-color); border:none;" onclick="triggerFollowEngine('${u.email}')"><i class="fa-solid fa-user-plus"></i> Follow</button>`;
+                }
+            } else { actionBtnHtml = `<span>(You)</span>`; }
+
+            container.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <div style="width:40px; height:40px; border-radius:50%; background-image:url('${u.avatar}'); background-size:cover; background-position:center;"></div>
+                        <div>
+                            <div style="font-weight:bold; display:flex; align-items:center; gap:6px;">
+                                @${u.username} <span style="font-size:12px;">${u.countryFlag || ''}</span>
+                            </div>
+                            <div style="font-size:11px; color:var(--text-muted);">${u.firstName || ''} ${u.lastName || ''} • ${u.countryName || 'Global'}</div>
+                        </div>
+                    </div>
+                    <div>${actionBtnHtml}</div>
+                </div>
+            `;
+        }
+
+        function triggerFollowEngine(targetEmail) {
+            localFallbackDatabase = localFallbackDatabase.map(u => {
+                if(u.email === activeUserSession.email) {
+                    if(!u.following.includes(targetEmail)) u.following.push(targetEmail);
+                }
+                if(u.email === targetEmail) {
+                    if(!u.followers.includes(activeUserSession.email)) u.followers.push(activeUserSession.email);
+                }
+                return u;
+            });
+            localStorage.setItem('bunnii_app_db', JSON.stringify(localFallbackDatabase));
+            alert("Channel following mapped successfully!");
+            executeGlobalSearch(); synchronizeSystemState();
+        }
+
+        function createPost() {
+            const txt = document.getElementById('postText').value;
+            if(!txt.trim() && !base64MediaCache) return;
+
+            const rawDate = new Date();
+            const formattedTimeStr = rawDate.toLocaleDateString() + ' @ ' + rawDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const pId = 'p_' + Date.now();
+
+            const postData = {
+                id: pId, user: activeUserSession.username, email: activeUserSession.email, avatar: activeUserSession.avatar,
+                text: txt, img: (cachedMediaType === 'image' ? base64MediaCache : ""), vid: (cachedMediaType === 'video' ? base64MediaCache : ""),
+                likes: 0, timestampString: formattedTimeStr, assetUrl: `https://bunnii.media/posts/view?id=${pId}`,
+                countryFlag: activeUserSession.countryFlag
+            };
+
+            let posts = JSON.parse(localStorage.getItem('bunnii_app_posts')) || [];
+            posts.unshift(postData);
+            localStorage.setItem('bunnii_app_posts', JSON.stringify(posts)); 
+            document.getElementById('postText').value = ""; clearSelectedMedia(); loadPosts();
+        }
+
+        function loadPosts() {
+            const feed = document.getElementById('feedArea'); const myFeed = document.getElementById('myPostsArea');
+            if(!feed || !myFeed) return;
+            feed.innerHTML = ""; myFeed.innerHTML = "";
+            let pCount = 0;
+
+            let posts = JSON.parse(localStorage.getItem('bunnii_app_posts')) || [];
+            posts.forEach(p => {
+                renderBlock(p, feed);
+                if(p.email === activeUserSession.email) { pCount++; renderBlock(p, myFeed); }
+            });
+            document.getElementById('statPostsCount').innerText = pCount;
+        }
+
+        function renderBlock(data, container) {
+            let mediaHtml = "";
+            if(data.img) mediaHtml += `<div class="post-media-slot"><img src="${data.img}"></div>`;
+            if(data.vid) mediaHtml += `<div class="post-media-slot"><video src="${data.vid}" controls loop></video></div>`;
+
+            let myAccount = localFallbackDatabase.find(x => x.email === activeUserSession.email) || activeUserSession;
+            let displayFollowContextBtn = "";
+            
+            if(data.email !== activeUserSession.email) {
+                let checkFollowing = myAccount.following && myAccount.following.includes(data.email);
+                displayFollowContextBtn = checkFollowing 
+                    ? `<button class="sec-btn" style="padding:2px 8px; font-size:11px; border-color:#00ffcc;" onclick="switchSection('chats'); openSecureChatChannel('${data.email}','${data.user}')"><i class="fa-solid fa-message"></i> Chat</button>`
+                    : `<button class="sec-btn" style="padding:2px 8px; font-size:11px; background:var(--accent-color); border:none;" onclick="triggerFollowEngine('${data.email}')"><i class="fa-solid fa-user-plus"></i> Follow</button>`;
+            }
+
+            container.innerHTML += `
+                <div class="post-card">
+                    <div class="post-header">
+                        <span class="post-user">
+                            <div class="post-avatar" style="background-image:url('${data.avatar}')"></div>
+                            <div>
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                    <strong>@${data.user}</strong> ${data.countryFlag || ''} ${displayFollowContextBtn}
+                                </div>
+                                <div class="post-timestamp">${data.timestampString}</div>
+                            </div>
+                        </span>
+                    </div>
+                    ${mediaHtml}
+                    <div class="post-text">${data.text}</div>
+                    <div class="post-actions">
+                        <button class="action-btn" onclick="likePost('${data.id}')"><i class="fa-solid fa-heart" style="color:var(--accent-color)"></i> ${data.likes || 0}</button>
+                        <button class="action-btn" onclick="copyPostAssetLink('${data.assetUrl}')"><i class="fa-solid fa-copy"></i> Copy Link</button>
+                        <button class="action-btn" style="color:#00ffcc;" onclick="openInstagramShareSheet('${data.id}')"><i class="fa-solid fa-share-nodes"></i> Share</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function copyPostAssetLink(url) {
+            navigator.clipboard.writeText(url);
+            alert("Reference link tracking copied!");
+        }
+
+        function openInstagramShareSheet(postId) {
+            targetSharePostId = postId;
+            const sheet = document.getElementById('globalShareSheet');
+            const targetList = document.getElementById('shareSheetTargetList');
+            targetList.innerHTML = "";
+
+            let myAccount = localFallbackDatabase.find(x => x.email === activeUserSession.email) || activeUserSession;
+            let followList = myAccount.following || [];
+
+            if(followList.length === 0) {
+                targetList.innerHTML = `<p style="color:var(--text-muted); text-align:center; margin-top:20px; font-size:13px;">Follow valid channels to route transmission.</p>`;
+            } else {
+                followList.forEach(emailStr => {
+                    let userObj = localFallbackDatabase.find(u => u.email === emailStr);
+                    if(userObj) {
+                        targetList.innerHTML += `
+                            <div class="share-user-row">
+                                <div style="display:flex; align-items:center; gap:10px;">
+                                    <div style="width:32px; height:32px; border-radius:50%; background-image:url('${userObj.avatar}'); background-size:cover; background-position:center;"></div>
+                                    <span style="font-weight:bold; font-size:14px;">@${userObj.username} ${userObj.countryFlag || ''}</span>
+                                </div>
+                                <button class="share-send-btn" onclick="executePostTransmissionDirect('${userObj.email}', '${userObj.username}')">Send</button>
+                            </div>
+                        `;
+                    }
+                });
+            }
+            sheet.classList.add('active');
+        }
+
+        function closeShareSheet() {
+            document.getElementById('globalShareSheet').classList.remove('active');
+            targetSharePostId = null;
+        }
+
+        function executePostTransmissionDirect(friendEmail, friendName) {
+            let posts = JSON.parse(localStorage.getItem('bunnii_app_posts')) || [];
+            let sharedPost = posts.find(p => p.id === targetSharePostId);
+            if(!sharedPost) return;
+
+            let sharedMessageText = `🔗 SHARED DATA CARD:\n"@${sharedPost.user}: ${sharedPost.text ? sharedPost.text.substring(0, 30) : 'Attached Asset'}"\nNetwork Point: ${sharedPost.assetUrl}`;
+
+            let msgPayload = { sender: activeUserSession.email, receiver: friendEmail, text: sharedMessageText, timestamp: Date.now() };
+            let msgs = JSON.parse(localStorage.getItem('bunnii_app_msgs')) || [];
+            msgs.push(msgPayload);
+            localStorage.setItem('bunnii_app_msgs', JSON.stringify(msgs));
+
+            alert(`Post node sent instantly to @${friendName}`);
+            closeShareSheet();
+        }
+
+        function likePost(id) {
+            let posts = JSON.parse(localStorage.getItem('bunnii_app_posts')) || [];
+            posts = posts.map(p => p.id === id ? { ...p, likes: p.likes + 1 } : p);
+            localStorage.setItem('bunnii_app_posts', JSON.stringify(posts)); loadPosts();
+        }
+
+        function loadChatTerminalUsers() {
+            const listTarget = document.getElementById('chatListTarget'); 
+            if(!listTarget) return;
+            listTarget.innerHTML = "";
+            let myAccount = localFallbackDatabase.find(x => x.email === activeUserSession.email) || activeUserSession;
+            
+            localFallbackDatabase.forEach(u => { 
+                if(u.email !== activeUserSession.email && myAccount.following && myAccount.following.includes(u.email)) {
+                    listTarget.innerHTML += `
+                        <div class="user-chat-card" onclick="openSecureChatChannel('${u.email}', '${u.username}')">
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <div style="width:36px; height:36px; border-radius:50%; background-image:url('${u.avatar}'); background-size:cover; border:1px solid var(--accent-color); background-position:center;"></div>
+                                <div>
+                                    <div style="font-weight:700; font-size:14px;">@${u.username} ${u.countryFlag || ''}</div>
+                                    <span style='color:#00ffcc; font-size:11px;'><i class='fa-solid fa-link'></i> Connection Live</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        function openSecureChatChannel(targetEmail, targetName) {
+            selectedChatUser = { email: targetEmail, name: targetName };
+            document.getElementById('chatUsersListView').style.display = "none";
+            document.getElementById('activeChatFrame').style.display = "flex";
+            document.getElementById('chatTargetName').innerText = '@' + targetName; 
+            streamMessages();
+        }
+
+        function exitChatWindow() {
+            document.getElementById('activeChatFrame').style.display = "none";
+            document.getElementById('chatUsersListView').style.display = "flex";
+        }
+
+        function sendSecureMessage() {
+            const input = document.getElementById('chatMsgInputField'); 
+            if(!input.value.trim() || !selectedChatUser) return;
+            
+            let msg = { sender: activeUserSession.email, receiver: selectedChatUser.email, text: input.value, timestamp: Date.now() };
+            let msgs = JSON.parse(localStorage.getItem('bunnii_app_msgs')) || []; msgs.push(msg);
+            localStorage.setItem('bunnii_app_msgs', JSON.stringify(msgs)); streamMessages();
+            input.value = "";
+        }
+
+        function streamMessages() {
+            const area = document.getElementById('chatMsgArea'); if(!area) return;
+            area.innerHTML = "";
+            let msgs = JSON.parse(localStorage.getItem('bunnii_app_msgs')) || [];
+            msgs.forEach(m => {
+                if((m.sender === activeUserSession.email && m.receiver === selectedChatUser.email) || (m.sender === selectedChatUser.email && m.receiver === activeUserSession.email)) {
+                    let isSharedBlock = m.text.includes("🔗 SHARED DATA CARD:");
+                    let finalBubbleHtml = isSharedBlock ? `<div class="shared-card-bubble">${m.text.replace(/\n/g, '<br>')}</div>` : m.text;
+                    let cls = (m.sender === activeUserSession.email) ? 'msg-sent' : 'msg-received';
+                    area.innerHTML += `<div class="msg-bubble ${cls}">${finalBubbleHtml}</div>`;
+                }
+            });
+            area.scrollTop = area.scrollHeight;
+        }
+
+        function switchSection(id, element) {
+            document.querySelectorAll('.app-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            const targetSection = document.getElementById(id);
+            if(targetSection) targetSection.classList.add('active');
+            if(element) element.classList.add('active');
+        }
+
+        function logout() { localStorage.removeItem('bunnii_app_session'); location.reload(); }
+    </script>
+</body>
+</html>
